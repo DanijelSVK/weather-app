@@ -1,4 +1,5 @@
 import { Component } from "react";
+import Card from "./components/card/Card";
 import Container from "./components/container/Container";
 import Navigation from "./components/navigation/Navigation";
 
@@ -11,7 +12,7 @@ class App extends Component {
       <div>
         <Container>
           <Navigation cities={CITIES} />
-          <p>weather</p>
+          <Card />
         </Container>
       </div>
     );
