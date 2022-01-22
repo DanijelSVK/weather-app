@@ -1,5 +1,6 @@
 import { Component } from "react";
 import BaseIcon from "../icon/BaseIcon";
+import Loader from "../loader/Loader";
 
 /**
 clear sky
@@ -51,26 +52,38 @@ const dayName: { [key: number]: string } = {
 };
 
 export default class Card extends Component {
+  state = {
+    isLoading: true,
+  };
+
+  componentDidMount() {}
+
   render() {
     const today = new Date();
+    const { isLoading } = this.state;
 
     return (
       <div className="weather-cards">
         {MOCK_DATA.map((day, index) => {
           let nextDay = new Date();
           nextDay.setDate(today.getDate() + index);
-          console.log(nextDay.getDay());
 
           return (
             <div
               key={day.id}
               className={`weather-card ${index === 0 ? "main" : ""}`}>
               <h2>{index === 0 ? "Today" : dayName[nextDay.getDay()]}</h2>
-              <BaseIcon name="Thunderstorm" />
-              <h3>
-                {Math.floor(day.temperature)}°
-                {index === 0 ? <span>Clouds</span> : null}
-              </h3>
+              {isLoading ? (
+                <Loader />
+              ) : (
+                <>
+                  <BaseIcon name="Thunderstorm" />
+                  <h3>
+                    {Math.floor(day.temperature)}°
+                    {index === 0 ? <span>Clouds</span> : null}
+                  </h3>
+                </>
+              )}
             </div>
           );
         })}

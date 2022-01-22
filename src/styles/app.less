@@ -65,6 +65,9 @@
         margin-right: 2em;
         margin-top: 14px;
       }
+      .loader svg {
+        width: 50px;
+      }
       h2 {
         flex: 1 1 100%;
         margin-bottom: 1em;
@@ -94,5 +97,18 @@
     path {
       fill: @dark-blue;
     }
+  }
+}
+
+.loader {
+  svg {
+    width: 50px;
+    animation: spinner 0.9s linear infinite;
+  }
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
   }
 }
