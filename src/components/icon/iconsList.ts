@@ -1,9 +1,9 @@
-export { ReactComponent as BrokenClouds } from "../../assets/images/icons/broken-clouds.svg";
 export { ReactComponent as ClearSky } from "../../assets/images/icons/clear-sky.svg";
 export { ReactComponent as FewClouds } from "../../assets/images/icons/few-clouds.svg";
+export { ReactComponent as ScatteredClouds } from "../../assets/images/icons/scattered-clouds.svg";
+export { ReactComponent as BrokenClouds } from "../../assets/images/icons/broken-clouds.svg";
 export { ReactComponent as Mist } from "../../assets/images/icons/mist.svg";
 export { ReactComponent as Rain } from "../../assets/images/icons/rain.svg";
-export { ReactComponent as ScatteredClouds } from "../../assets/images/icons/scattered-clouds.svg";
 export { ReactComponent as ShowerRain } from "../../assets/images/icons/shower-rain.svg";
 export { ReactComponent as Snow } from "../../assets/images/icons/snow.svg";
 export { ReactComponent as Spinner } from "../../assets/images/icons/spinner.svg";

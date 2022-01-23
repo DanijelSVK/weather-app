@@ -12,7 +12,7 @@ class App extends Component {
       <div>
         <Container>
           <Navigation cities={CITIES} />
-          <Card />
+          <Card city="New York" />
         </Container>
       </div>
     );

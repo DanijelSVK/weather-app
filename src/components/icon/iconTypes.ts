@@ -1,10 +1,10 @@
 export type IconTypes =
   | "BrokenClouds"
   | "ClearSky"
+  | "ScatteredClouds"
   | "FewClouds"
   | "Mist"
   | "Rain"
-  | "ScatteredClouds"
   | "ShowerRain"
   | "Snow"
   | "Spinner"

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import BaseIcon from "../icon/BaseIcon";
 
 export default class Loader extends Component {

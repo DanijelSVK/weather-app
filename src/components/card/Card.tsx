@@ -1,92 +1,117 @@
 import { Component } from "react";
 import BaseIcon from "../icon/BaseIcon";
 import Loader from "../loader/Loader";
+import {
+  dayName,
+  getWeatherIconName,
+  prepareData,
+  request,
+} from "../../utils/utils";
+import {
+  CurrentWeatherResponse,
+  ForecastType,
+  OneCallResponse,
+} from "../../types/forecastTypes";
 
-/**
-clear sky
-few clouds ok
-scattered clouds ok
-broken clouds OK
-shower rain ok
-rain ok
-thunderstorm OK
-snow OK
-mist ok
-*/
-const MOCK_DATA = [
-  {
-    id: 1,
-    temperature: 19.34,
-    weatherIcon: "Clouds",
-  },
-  {
-    id: 2,
-    temperature: 4.34,
-    weatherIcon: "light rain",
-  },
-  {
-    id: 3,
-    temperature: 4.34,
-    weatherIcon: "few clouds",
-  },
-  {
-    id: 4,
-    temperature: 4.34,
-    weatherIcon: "Clouds",
-  },
-  {
-    id: 5,
-    temperature: 4.34,
-    weatherIcon: "Clouds",
-  },
-];
-
-const dayName: { [key: number]: string } = {
-  0: "Sun",
-  1: "Mon",
-  2: "Tue",
-  3: "Wed",
-  4: "Thu",
-  5: "Fri",
-  6: "Sat",
+type CardProps = {
+  city: string;
 };
 
-export default class Card extends Component {
-  state = {
-    isLoading: true,
-  };
+type CardState = {
+  isLoading: boolean;
+  hasError: boolean;
+  forecast: ForecastType[];
+  cityCords: {
+    lat: number;
+    lon: number;
+  } | null;
+};
 
-  componentDidMount() {}
+export default class Card extends Component<CardProps, CardState> {
+  constructor(props: CardProps) {
+    super(props);
+
+    this.state = {
+      isLoading: true,
+      hasError: false,
+      forecast: [],
+      cityCords: null,
+    };
+  }
+
+  async componentDidMount() {
+    try {
+      const currentWeather = await request<CurrentWeatherResponse>(
+        `https://api.openweathermap.org/data/2.5/weather?q=${this.props.city}&cnt=5&units=metric&appid=${process.env.REACT_APP_OPEN_WEATHER_MAP_API_KEY}`
+      );
+
+      this.setState({
+        forecast: [
+          ...this.state.forecast,
+          {
+            id: currentWeather.id,
+            temperature: currentWeather.main.temp,
+            weather: currentWeather.weather[0].main,
+            weatherDescripton: currentWeather.weather[0].description,
+          },
+        ],
+        cityCords: {
+          lat: currentWeather.coord.lat,
+          lon: currentWeather.coord.lon,
+        },
+      });
+
+      const forecast = await request<OneCallResponse>(
+        `https://api.openweathermap.org/data/2.5/onecall?lon=${this.state.cityCords?.lon}&lat=${this.state.cityCords?.lat}&exclude=minutely,hourly&cnt=5&units=metric&appid=${process.env.REACT_APP_OPEN_WEATHER_MAP_API_KEY}`
+      );
+
+      this.setState({
+        forecast: [...this.state.forecast, ...prepareData(forecast)],
+        isLoading: false,
+      });
+    } catch (error) {
+      this.setState({
+        hasError: true,
+        isLoading: false,
+      });
+    }
+  }
 
   render() {
     const today = new Date();
-    const { isLoading } = this.state;
+    const { hasError, isLoading, forecast } = this.state;
 
     return (
       <div className="weather-cards">
-        {MOCK_DATA.map((day, index) => {
-          let nextDay = new Date();
-          nextDay.setDate(today.getDate() + index);
+        {isLoading ? (
+          <Loader />
+        ) : hasError ? (
+          <h2 className="display-error">
+            Something went wrong. Try to refresh.
+          </h2>
+        ) : (
+          forecast.map(
+            ({ id, weather, weatherDescripton, temperature }, index) => {
+              let nextDay = new Date();
+              nextDay.setDate(today.getDate() + index);
 
-          return (
-            <div
-              key={day.id}
-              className={`weather-card ${index === 0 ? "main" : ""}`}>
-              <h2>{index === 0 ? "Today" : dayName[nextDay.getDay()]}</h2>
-              {isLoading ? (
-                <Loader />
-              ) : (
-                <>
-                  <BaseIcon name="Thunderstorm" />
+              return (
+                <div
+                  key={id}
+                  className={`weather-card ${index === 0 ? "main" : ""}`}>
+                  <h2>{index === 0 ? "Today" : dayName[nextDay.getDay()]}</h2>
+                  <BaseIcon
+                    name={getWeatherIconName(weather, weatherDescripton)}
+                  />
                   <h3>
-                    {Math.floor(day.temperature)}°
-                    {index === 0 ? <span>Clouds</span> : null}
+                    {Math.round(temperature)}°
+                    {index === 0 ? <span>{weather}</span> : null}
                   </h3>
-                </>
-              )}
-            </div>
-          );
-        })}
+                </div>
+              );
+            }
+          )
+        )}
       </div>
     );
   }
