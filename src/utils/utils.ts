@@ -9,7 +9,7 @@ import {
 export const prepareData = (forecast: OneCallResponse): ForecastType[] => {
   let result: ForecastType[] = [];
 
-  const dailyForecasts = forecast.daily.slice(0, 4);
+  const dailyForecasts = forecast.daily.slice(0, 4); // @todo check if first day is today or tomorrow
 
   dailyForecasts.map((item) => {
     return result.push({
@@ -48,8 +48,8 @@ export const weatherIconMap: Partial<{
   "scattered clouds": "ScatteredClouds",
   "broken clouds": "BrokenClouds",
   Drizzle: "ShowerRain",
-  Rain: "Rain", //
-  Snow: "Snow", //
+  Rain: "Rain",
+  Snow: "Snow",
   Thunderstorm: "Thunderstorm",
   Mist: "Mist",
 };
