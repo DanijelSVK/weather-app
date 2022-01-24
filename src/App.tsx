@@ -1,4 +1,4 @@
-import { Component, ElementType } from "react";
+import { Component } from "react";
 import Card from "./components/card/Card";
 import Container from "./components/container/Container";
 import Navigation from "./components/navigation/Navigation";
