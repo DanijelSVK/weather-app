@@ -28,14 +28,16 @@ class App extends Component<{}, AppState> {
   };
 
   render() {
+    const { cities, selectedCity } = this.state;
+
     return (
       <Container>
         <Navigation
-          cities={CITIES}
+          cities={cities}
           handleCityChange={this.handleCityChange}
-          selectedCity={this.state.selectedCity}
+          selectedCity={selectedCity}
         />
-        <Card city="Zilina" />
+        <Card city={selectedCity} />
       </Container>
     );
   }

@@ -1,23 +1,15 @@
 import { Component } from "react";
 import BaseIcon from "../icon/BaseIcon";
 import Loader from "../loader/Loader";
-import {
-  dayName,
-  getWeatherIconName,
-  prepareData,
-  request,
-} from "../../utils/utils";
-import {
-  CurrentWeatherResponse,
-  ForecastType,
-  OneCallResponse,
-} from "../../types/forecastTypes";
+import { dayName, getWeatherIconName, prepareData } from "../../utils/utils";
+import { ForecastType } from "../../types/forecastTypes";
+import { getCurrentWeather, getForecastForLocation } from "./card.utils";
 
 type CardProps = {
   city: string;
 };
 
-type CardState = {
+export type CardState = {
   isLoading: boolean;
   hasError: boolean;
   forecast: ForecastType[];
@@ -41,13 +33,10 @@ export default class Card extends Component<CardProps, CardState> {
 
   async componentDidMount() {
     try {
-      const currentWeather = await request<CurrentWeatherResponse>(
-        `https://api.openweathermap.org/data/2.5/weather?q=${this.props.city}&cnt=5&units=metric&appid=${process.env.REACT_APP_OPEN_WEATHER_MAP_API_KEY}`
-      );
+      const currentWeather = await getCurrentWeather(this.props.city);
 
       this.setState({
         forecast: [
-          ...this.state.forecast,
           {
             id: currentWeather.id,
             temperature: currentWeather.main.temp,
@@ -61,14 +50,17 @@ export default class Card extends Component<CardProps, CardState> {
         },
       });
 
-      const forecast = await request<OneCallResponse>(
-        `https://api.openweathermap.org/data/2.5/onecall?lon=${this.state.cityCords?.lon}&lat=${this.state.cityCords?.lat}&exclude=minutely,hourly&cnt=5&units=metric&appid=${process.env.REACT_APP_OPEN_WEATHER_MAP_API_KEY}`
+      const forecast = await getForecastForLocation(
+        this.state.cityCords?.lon,
+        this.state.cityCords?.lat
       );
 
-      this.setState({
-        forecast: [...this.state.forecast, ...prepareData(forecast)],
-        isLoading: false,
-      });
+      if (forecast) {
+        this.setState({
+          forecast: [...this.state.forecast, ...prepareData(forecast)],
+          isLoading: false,
+        });
+      }
     } catch (error) {
       this.setState({
         hasError: true,
@@ -77,9 +69,50 @@ export default class Card extends Component<CardProps, CardState> {
     }
   }
 
+  async componentDidUpdate(prevProps: CardProps) {
+    if (prevProps.city !== this.props.city) {
+      try {
+        const currentWeather = await getCurrentWeather(this.props.city);
+
+        this.setState({
+          forecast: [
+            {
+              id: currentWeather.id,
+              temperature: currentWeather.main.temp,
+              weather: currentWeather.weather[0].main,
+              weatherDescripton: currentWeather.weather[0].description,
+            },
+          ],
+          cityCords: {
+            lat: currentWeather.coord.lat,
+            lon: currentWeather.coord.lon,
+          },
+        });
+
+        const forecast = await getForecastForLocation(
+          this.state.cityCords?.lon,
+          this.state.cityCords?.lat
+        );
+
+        if (forecast) {
+          this.setState({
+            forecast: [...this.state.forecast, ...prepareData(forecast)],
+            isLoading: false,
+          });
+        }
+      } catch (error) {
+        this.setState({
+          hasError: true,
+          isLoading: false,
+        });
+      }
+    }
+  }
+
   render() {
     const today = new Date();
     const { hasError, isLoading, forecast } = this.state;
+    console.log("card render");
 
     return (
       <div className="weather-cards">
