@@ -10,9 +10,9 @@
 
 .navigation {
   ul {
-    margin: 3em 11.25em;
+    margin: 3em 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     li {
       font-size: 2.25rem;
       text-transform: uppercase;
@@ -133,5 +133,41 @@
 @keyframes spinner {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 660px) {
+  .navigation ul {
+    flex-direction: column;
+    align-items: center;
+    li {
+      margin-bottom: 1em;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .weather-cards {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-areas:
+      "Main Main"
+      ". ."
+      ". .";
+  }
+  .weather-cards {
+    .weather-card {
+      &:first-child {
+      }
+      &:nth-child(2) {
+        border-radius: 0;
+      }
+      &:last-child {
+        border-radius: 0 0 @border-radius @border-radius;
+      }
+    }
   }
 }
